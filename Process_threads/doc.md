@@ -55,7 +55,7 @@
    - 在一个地址空间中多个线程共享：代码段，堆区，全局数据区，打开的文件 (文件描述符表) 都是线程共享的
  - 线程是程序的最小执行单位，进程是操作系统中最小的资源分配单位
    - 每个进程对应一个虚拟地址空间，一个进程只能抢一个 CPU 时间片
-一个地址空间中可以划分出多个线程，在有效的资源基础上，能够抢更多的 CPU 时间片   
+   一个地址空间中可以划分出多个线程，在有效的资源基础上，能够抢更多的 CPU 时间片   
 
 ![](../image/2.png)
 
@@ -64,6 +64,7 @@
  - **POSIX 线程库**   
  在Linux中是用进程模拟线程的，所以就不会用形如 `fork()` 这类的系统调用提供给我们用来专门控制线程。所以要实现多线程，就要使用到库函数，这里面比较底层的是`POSIX`线程库，所以它就是产生的就是用户级别的线程，其绝大多数函数名字都是以 `pthread_` 开头，并且注意引入头文件`<pthread.h>`，而且链接时注意加入 `-1pthread` 选项
  - **创建线程**      
+   
    - `pthread`库中创建线程的函数是`pthread_create()`，该函数的声明如下：
      ```c
       int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void*), void *arg);
@@ -124,6 +125,37 @@
 
  - **线程同步**   
    - 线程同步指的是控制多个线程之间的执行顺序和访问共享资源的方式，以保证线程之间的正确性和一致性。在并发编程中，线程同步是非常必要的，因为多个线程可能会同时访问同一个共享资源，导致数据不一致或者竞态条件的问题。 
-   - 常见的线程同步方法包括**锁**、**信号量**、**条件变量**等。锁是一种最常用的同步机制，它可以确保在任何时刻只有一个线程能够访问共享资源，从而避免了竞态条件的问题。信号量是一种更加通用的同步机制，它可以用来控制多个线程对共享资源的访问次数。条件变量则是一种用于线程间通信的同步机制，它可以使线程在满足特定条件时等待或唤醒。
- 
-  
+   - 常见的线程同步方法包括**锁**、**信号量**、**条件变量**等。锁是一种最常用的同步机制，它可以确保在任何时刻只有一个线程能够访问共享资源，从而避免了竞态条件的问题。信号量是一种更加通用的同步机制，它可以用来控制多个线程对共享资源的访问次数。条件变量则是一种用于线程间通信的同步机制，它可以使线程在满足特定条件时等待或唤醒。      
+     - 互斥锁
+       ```c
+        1.创建一把锁
+          pthread_mutex_t lock//创建一把名字叫做lock的锁
+        2.在线程创建之前初始化这把锁
+          int pthread_mutex_init(pthread_mutex_t* restrict mutex,const pthread_mutexattr_t* retstrict attr);
+        //mutex就是要初始化的那把锁
+        //第二个参数设置为NULL
+        3.在线程中进行加锁和解锁
+          int pthread_mutex_lock(pthread_mutex_t* mutex);
+          int pthread_mutex_unlock(pthread_mutex_t* mutex);
+        4.销毁锁
+          int pthread_mutex_destory(pthread_mutex_t* mutex);
+        //注意不要销毁一个已经加锁的锁，已经销毁的锁要确保后面不会有线程再尝试加锁
+       ```
+     - 条件变量
+       ```c
+        1.创建条件变量
+          pthread_cond_t cond;
+        2.初始化条件变量
+          int pthread_cond_init(pthread_cond_t* restrict cond,const pthread_condattr_t* restrict attr);
+          //cond是那个条件
+          //attr设置为NULL
+        3.条件等待
+          int pthread_cond_wait(pthread_cond_t* restrict cond,pthread_mutex_t* restrict mutex)
+          //cond：该线程需要等待这个条件
+          //mutex：
+        4.线程唤醒
+          int pthread_cond_signal(pthread_cond_t* cond);
+        5.销毁条件变量
+          int pthread_cond_destory(pthread_cond_t* cond)
+       ```
+
