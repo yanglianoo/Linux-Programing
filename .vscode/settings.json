@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "functional": "cpp",
+        "random": "c",
+        "limits": "c",
+        "pool.h": "c",
+        "new": "cpp",
+        "*.tcc": "cpp",
+        "type_traits": "cpp"
+    }
+}

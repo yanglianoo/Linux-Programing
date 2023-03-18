@@ -3,6 +3,10 @@
 #include  <stdio.h>
 #include  <unistd.h>
 #include  <string.h>
+
+/*
+    基于c语言的线程池
+*/
 const int NUMBER = 2;
 Threadpool *threadPoolCreate(int min,int max,int queueSize)
 {
@@ -62,6 +66,7 @@ Threadpool *threadPoolCreate(int min,int max,int queueSize)
 
     return NULL;
 }
+
 
 void* worker(void* arg)
 {
